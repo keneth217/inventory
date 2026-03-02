@@ -1,0 +1,38 @@
+.form-group {
+  --pad: .75rem;
+  position: relative;
+}
+/*input {
+  padding: var(--pad);
+  border-radius: 8px;
+  background-color: var(--bg);
+  border: 1px solid #eee;
+  color: inherit;
+  width: 300px;
+  outline: none;
+}*/
+label.the-floater {
+  position: absolute;
+  left: var(--pad);
+  top: var(--pad);
+  background: white;
+  padding-inline: .3em;
+  transition: transform 200ms;
+  pointer-events: none;
+  transform-origin: left;
+  translate: -.3em;
+}
+/*
+input::placeholder {
+  opacity: 0;
+}*/
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  transform: translateY(calc(-50% - var(--pad))) scale(.9);
+  color: limegreen;
+  font-weight: bold;
+}
+
+input:focus {
+  border: 1px solid var(--accent);
+}

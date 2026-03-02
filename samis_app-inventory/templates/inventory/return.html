@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-note2 icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Return Assets
+                            <div class="page-title-subheading">
+                                Return Multiple Assets to Store
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/department/{{ records.department.uuid }}">{{ records.department.name }}</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">Return Assets</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <div class="card-body"><h5 class="card-title">Return from {{ records.department.name }}</h5>
+                                <form action="/return_assets" method="post" role="form">
+                                    <select class="mb-2 form-control" name="store_id" required>
+                                        <option value="" selected disabled>Select Store</option>
+                                        {%for item in records.stores%}
+                                        <option value="{{ item.id }}">{{ item.name }}</option>
+                                        {%endfor%}
+                                    </select>
+                                    <input type="checkbox" name="selectall" autocomplete="off" onclick="eventCheckBox('assets')"> Select All Assets
+                                    <div class="divider"></div>
+                                    {%for item in records.department.assets%}
+                                    <div class="position-relative form-check form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" name="assets" value="{{ item.id }}">
+                                            {{ item.product.name }}: {{ item.name }} which is a <b>{{ item.description }}</b>  with serial no <b>{{ item.serial }}</b>
+                                        </label>
+                                    </div>
+                                    <div class="divider"></div>
+                                    {%endfor%}
+                                    <p id="text" style="display: none;" class="text-success">Selected: <p>
+                                    <input id="remarks" type="text" class="mb-2 form-control" name="remarks" placeholder="Condition of Return">
+                                    <input type="hidden" name="department_id" value="{{records.department.id}}">
+                                    <button type="submit" class="btn btn-primary">Return</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

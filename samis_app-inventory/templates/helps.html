@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main__inner">
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-ticket icon-gradient bg-mean-fruit">
+                    </i>
+                </div>
+                <div>Tickets
+                    <div class="page-title-subheading">Raise help requests.
+                    </div>
+                </div>
+            </div>
+            <div class="page-title-actions">
+                <a class="btn btn-info" data-toggle="collapse" href="#add" role="button">New Ticket</a>
+            </div>
+        </div>
+    </div>
+    <nav class="" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="active breadcrumb-item" aria-current="page">Tickets</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-card mb-3 card">
+                <div class="table-responsive collapse" id="add">
+                    <div class="card-body"><h5 class="card-title">New Ticket</h5>
+                        <form action="/new_ticket" method="post" role="form">
+                          <select class="mb-2 form-control" name="category" required>
+                            <option value="System Error">System Error</option>
+                            <option value="Data Issues">Data Issues</option>
+                            <option value="Payment Issues">Payment Issues</option>
+                            <option value="Others">Others</option>
+                          </select>
+                          <input type="text" class="form-control" name="subject" placeholder="Subject" required><br>
+                          <textarea class="form-control" name="message" placeholder="Type your problem" required></textarea> <br>
+                          <input type="hidden" name="agency_uuid" value="{{session.user.uuid}}">
+                          <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Subject</th>
+                            <th>Category</th>
+                            <th class="text-center">Status</th>
+                            <th>Last Update</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {%for item in records%}
+                        <tr>
+                            <td class="text-center text-muted">{{ item.id }}</td>
+                            <td>{{ item.subject}}</td>
+                            <td><div class="widget-heading">{{ item.category }}</div></td>
+                            
+                            <td class="text-center">
+                                <div class="badge badge-warning">{{ item.status }}</div>
+                            </td>
+                            <td>{{ item.last_update}}</td>
+                            <td class="text-center">
+                                <a href="/help/{{ item.uuid }}" class="btn btn-info" role="button">View</a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+  {% endblock %}

@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title d-print-none">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-note2 icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Purchase Order No. {{ records.order.no }}
+                            <div class="page-title-subheading">
+                                Supplier: <b>{{ records.order.supplier.name }}</b>
+                                <div class="mb-2 mr-2 badge badge-secondary">{{ records.order.status }}</div>
+                                Value: <b>{{ records.order.value |round(2) }}</b>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        {%if records.order.status == "draft"%}
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#add" role="button">Add Items</a>
+                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#price" role="button">Edit Price</a>
+                            {%if records.order.value != 0%}
+                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#update" role="button">Lock Order</a>
+                            {%endif%}
+                        {%elif records.order.status == "locked"%}
+                        <a class="btn btn-success" href="javascript:document.title = 'The Great School PO'; window.print();" role="button">Print LPO</a>
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#receive" role="button">Receive Items</a>
+                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#update" role="button">Unlock Order</a>
+                        {%elif records.order.status == "completed"%}
+                        <a class="btn btn-success" href="javascript:document.title = 'The Great School GRN'; window.print();" role="button">Print GRN</a>
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+            <nav class="d-print-none" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/order/{{ session.user.uuid }}">Purchase Orders</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">Purchase Order No. {{ records.order.no }}</li>
+                </ol>
+            </nav>
+            <div class="row printMe">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <div class="font-icon-wrapper">
+                                <img src="/static/images/photos/{{ session.school.logo }}" width="64" height="64">
+                                <h5>{{ session.school.name }}</h5>
+                                {%if records.order.status != "completed"%}
+                                <h6>Purchase Order</h6>
+                                {%else%}
+                                <h6>Goods Received Note</h6>
+                                {%endif%}
+                                <p>_____________________</p>
+                            </div>
+                        </div>
+                        <div class="app-page-title">
+                            <div class="page-title-wrapper">
+                                <div class="page-title-heading">
+                                    <div class="page-title-icon">
+                                        <i class="pe-7s-note2 icon-gradient bg-mean-fruit">
+                                        </i>
+                                    </div>
+                                    <div>
+                                        {%if records.order.status != "completed"%}
+                                        LPO
+                                        {%else%}
+                                        GRN
+                                        {%endif%} No. {{ records.order.id }}
+                                        <div class="page-title-subheading">
+                                            Supplier: <b>{{ records.order.supplier.name }}</b>
+                                        </div>
+                                        <div class="page-title-subheading">
+                                            Date: <b>30 August, 2024</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Item</th>
+                                    <th>Specification</th>
+                                    <th class="text-right">Price</th>
+                                    <th class="text-right">Quantity</th>
+                                    <th class="text-right">Amount</th>
+                                    <th class="text-center d-print-none">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%set ns = namespace(count = 1, total = 0)%}
+                                {%for item in records.order.order_items%}
+                                    {%if item.quantity != 0%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ ns.count }}</td>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.specification }}</td>
+                                    <td class="text-right">{{ item.price |round(2) }}</td>
+                                    <td class="text-right">{{ item.quantity }} {{ item.product.unit.name }}</td>
+                                    <td class="text-right">{{ (item.price * item.quantity) |round(2) }}</td>
+                                    <td class="text-center">
+                                        {%if records.order.status == "draft"%}
+                                        <!--a class="btn btn-warning" href="/reset/order/{{ item.uuid }}" role="button">Remove</a-->
+                                        <a class="btn btn-warning" data-toggle="modal" data-target="#delete_{{ item.uuid }}">Remove</a>
+                                        {%elif records.order.status == "completed"%}
+                                        <a class="btn btn-warning" href="/inventory/po_item/{{ item.uuid }}" role="button">Return</a>
+                                        {%endif%}                            
+                                </tr>
+                                    {%endif%}
+                                {%set ns.count = ns.count + 1%}
+                                {%set ns.total = ns.total + (item.price * item.quantity)%}
+                                {%endfor%}
+                                </tbody>
+                                <thead>
+                                <tr>
+                                    <th class="text-center"></th>
+                                    <th></th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right">Total</th>
+                                    <th></th>
+                                    <th class="text-right">{{ ns.total |round(2) }}</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <p class="printMe">Created by <b>{{ records.order.manager.employee.name }}</b></p>
+                </div>
+                <p class="printMe">Printed by <b>{{ session.user.name }}</b></p>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Items</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/add_po_items" method="post" role="form">
+            <div class="modal-body">
+                <select class="mb-2 form-control" name="product_id" required>
+                    <option value="" selected disabled>Select Product</option>
+                    {%for item in records.products%}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {%endfor%}
+                </select>
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="quantity" name="quantity" placeholder="" required>
+                    <label class="the-floater" for="quantity">Quantity</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="specification" name="specification" placeholder="">
+                    <label class="the-floater" for="specification">Specification</label>
+                </div>
+                <input type="hidden" name="item_id" value="{{records.order.id}}">
+                <div class="modal-footer">
+                    <button type="submit" id="save_data" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="price" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Price</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/edit_price" method="post" role="form">
+            <div class="modal-body">
+                <select class="mb-2 form-control" name="item_id" required>
+                    <option value="" selected disabled>Select Product</option>
+                    {%for item in records.order_items%}
+                    <option value="{{ item.id }}">{{ item.product.name }}: {{ item.specification }} @ {{ item.price }}</option>
+                    {%endfor%}
+                </select>
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="price" name="price" placeholder="" required>
+                    <label class="the-floater" for="price">New Price</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Change</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Order</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/update_status/order" method="post" role="form">
+            <div class="modal-body">
+                <select class="mb-2 form-control" name="status" required>
+                    <option value="" selected disabled>Select Changes</option>
+                    {%if records.order.status == "draft"%}
+                    <option value="locked">Lock</option>
+                    {%else%}
+                    <option value="draft">Unlock</option>
+                    {%endif%}
+                    <option value="cancelled">Cancel</option>
+                </select>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="remarks" name="remarks" placeholder="">
+                    <label class="the-floater" for="remarks">Remarks</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+                <input type="hidden" name="item_id" value="{{records.order.id}}">
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="receive" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Accept Items</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/receive_po_items" method="post" role="form">
+            <div class="modal-body">
+                <select class="mb-2 form-control" name="store_id" required>
+                    <option value="" selected disabled>Received At</option>
+                    {%for item in records.stores%}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {%endfor%}
+                </select>
+                <input type="hidden" name="order_id" value="{{records.order.id}}">
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" name="item_id" value="{{records.order.id}}">
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{%for item in records.order.order_items%}
+{%endfor%}
+<!--End Page Modals-->
+{% endblock %}

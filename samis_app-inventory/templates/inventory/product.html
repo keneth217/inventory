@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-box1 icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>{{ records.product.name }}
+                            <div class="page-title-subheading">{{ records.product.quantity }} {{ records.product.unit.name }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-info" data-toggle="collapse" href="#edit" role="button">Edit Product</a>
+                        <a class="btn btn-info" data-toggle="collapse" href="#edit_unit" role="button">Change Unit</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/stock/ujuzi">Stock</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">{{ records.product.name }}</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive collapse" id="edit">
+                            <div class="card-body"><h5 class="card-title">Edit Product</h5>
+                                <form action="/edit_item/product" method="post" role="form">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span style="width: 150px;" class="input-group-text mb-2">Name</span></div>
+                                        <input type="text" class="mb-2 form-control" name="name" value="{{records.product.name}}" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span style="width: 150px;" class="input-group-text mb-2">Description</span></div>
+                                        <input type="text" class="mb-2 form-control" name="description" value="{{records.product.description}}">
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span style="width: 150px;" class="input-group-text mb-2">Re-Order Level</span></div>
+                                        <input type="text" class="mb-2 form-control" name="reorder_level" value="{{records.product.reorder_level}}">
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span style="width: 150px;" class="input-group-text mb-2">Re-Order Quantity</span></div>
+                                        <input type="text" class="mb-2 form-control" name="reorder_quantity" value="{{records.product.reorder_quantity}}">
+                                    </div>
+                                  <input type="hidden" name="item_id" value="{{records.product.id}}">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive collapse" id="edit_unit">
+                            <div class="card-body"><h5 class="card-title">Edit Measuring Unit</h5>
+                                <form action="/edit_item/measuring_unit" method="post" role="form">
+                                  <select class="mb-2 form-control" name="unit_id"  onchange="select_other(this.value, 'unit')" required>
+                                    <option value="" disabled="disabled" selected>Select Unit</option>
+                                    {%for item in records.units%}
+                                        {%if item.id != records.product.unit_id%}
+                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                        {%endif%}
+                                    {%endfor%}
+                                    <option value="0">New Unit</option>
+                                  </select>
+                                  <input type="text" style="display: none;" class="mb-2 form-control" id="unit" name="unit" placeholder="Unit Name">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span style="width: 150px;" class="input-group-text mb-2">Unit Cost</span></div>
+                                        <input type="text" class="mb-2 form-control" name="cost" value="{{records.product.cost}}">
+                                    </div>
+                                  <input type="hidden" name="item_id" value="{{records.product.id}}">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover" id="myTable">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Date</th>
+                                    <th>Details</th>
+                                    <th>Quantity</th>
+                                    <th>Balance</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%for item in records.product.stock_logs%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ item.id }}</td>
+                                    <td>{{ item.date }}</td>
+                                    <td>{{ item.details }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.balance }}</td>
+                                </tr>
+                                {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'admin/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-key icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>System Administration Guide
+                            <div class="page-title-subheading">How to Configure and Manage the Samis School Management System
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">System Data</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select <b>Admin -> Settings</b></p>
+                            <p class="text-muted">Here you can view a list the following data items and their count</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    Departments <br>Employees <br>
+                                    {%if session.module == "Inventory"%}
+                                    Suppliers <br>Units <br> Stores <br>Products <br>
+                                    {%else%}
+                                    Terms <br>
+                                    {%endif%}
+                                </ol>
+                            </nav>
+                            <p class="text-muted">Select one data item <b>e.g. Departments</b></p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all items (Departments) <br>
+                                    Add new item (Department) <br>
+                                    Delete one item (Department) <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">School Data</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select <b>Admin -> Settings</b></p>
+                            <p class="text-muted">Here you can view and edit the following data</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    School Logo (Upload) <br>
+                                    School Name <br>
+                                    School Address <br>
+                                    Name of current user <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">System Users</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select <b>Admin -> Users</b></p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all the system users <br>
+                                    Create new system user <br>
+                                    View the user logs for a selected user <br>
+                                    Name of current user <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Deleted Items</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select <b>Admin -> Deleted Items</b></p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all the deleted items in the system <br>
+                                    Restore an erroneously deleted item <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">User Logs</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select <b>Admin -> User Logs</b></p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all the system user logs <br>
+                                    Filter logs by any field <br>
+                                    View the logs for one user <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

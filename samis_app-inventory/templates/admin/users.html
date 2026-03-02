@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'admin/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-users icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Users
+                            <div class="page-title-subheading">View all the users.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#user" role="button">New User</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">Users</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        {%for item in records.users%}
+                        <div class="table-responsive collapse" id="edit{{ item.id }}">
+                            <div class="card-body"><h5 class="card-title">Edit User</h5>
+                                <form action="/edit_user" method="post" role="form">
+                                  <input type="text" class="mb-2 form-control" name="name" value="{{ item.employee.name }}">
+                                  <input type="text" class="mb-2 form-control" name="phone" value="{{ item.phone }}">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        {%endfor%}
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover" id="myTable">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Name</th>
+                                    <th class="text-center">Phone No</th>
+                                    <th class="text-center">Role</th>
+                                    <th class="text-center">Rights</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%for user in records.users%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ user.id }}</td>
+                                    <td>{{ user.employee.name }}</td>
+                                    <td class="text-center">{{ user.phone }}</td>
+                                    <td class="text-center">{{ user.employee.designation }}</td>
+                                    <td class="text-center">{{ user.rights }}</td>
+                                    <td class="text-center">
+                                        <a href="/user_logs/{{ user.uuid }}" class="btn btn-info" role="button">Activity</a>
+                                        <!--a class="btn btn-info" data-toggle="collapse" href="#edit{{ user.id }}" role="button">Edit</a-->
+                                    </td>
+                                </tr>
+                                {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<div class="modal fade" id="user" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new_user" method="post" role="form">
+            <div class="modal-body">
+              <select class="mb-2 form-control" name="category" required>
+                    <div class="form-group">
+                        <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                        <label class="the-floater" for="name">Full Name</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="mb-2 form-control" id="phone" name="phone" placeholder="" required>
+                        <label class="the-floater" for="phone">Email Address or Phone No</label>
+                    </div>
+                  <select class="mb-2 form-control" name="designation" required>
+                    <option value="" disabled="disabled" selected>Designation</option>
+                    <option value="Principal">Principal</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Bursar">Bursar</option>
+                    <option value="Clerk">Clerk</option>
+                  </select>
+                  {%if session.module == "Inventory"%}
+                  <div class="position-relative form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="rights" value="Receive" checked>Can Receive Items
+                    </label>
+                  </div>
+                  <div class="position-relative form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="rights" value="Issue" checked>Can Issue Items
+                    </label>
+                  </div>
+                  {%endif%}
+                  <input type="hidden" name="module" value="Administration">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--End Page Modals-->
+{% endblock %}

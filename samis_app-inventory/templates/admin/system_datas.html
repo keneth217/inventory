@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'admin/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-config icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>System Data
+                            <div class="page-title-subheading">View and manage your data
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-success" href="#" data-toggle="modal" data-target="#logo" role="button">School Logo</a>
+                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#edit" role="button">My Data</a>
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#add" role="button">Add Data</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">System Data</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Data Type</th>
+                                    <th class="text-center">No of Items</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%set ns = namespace(count = 1)%}
+                                {%for item in records.settings%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ ns.count }}</td>
+                                    <td>{{ item.name }}s</td>
+                                    <td class="text-center">{{ item.no }}</td>
+                                    <td>Active</td>
+                                    <td class="text-center">
+                                        <a class="btn btn-success" href="/settings/{{ item.name |lower }}" role="button">View</a>
+                                    </td>
+                                </tr>
+                                {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<div class="modal fade" id="logo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Upload School Logo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/edit_data/logo" method="post" role="form" enctype=multipart/form-data>
+            <div class="modal-body">
+                <div class="font-icon-wrapper">
+                    <img src="/static/images/photos/{{ session.school.logo }}" width="64" height="64">
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text mb-2">Logo</span></div>
+                    <input type="file" class="mb-2 form-control" name="logo" accept="image/*" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div><div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit User Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/edit_data/data" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" value="{{ records.user.employee.name }}" required>
+                    <label class="the-floater" for="name">Your Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="school" name="school" value="{{ records.school.name }}" required>
+                    <label class="the-floater" for="school">School Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="address" name="address" value="{{ records.school.address }}" required>
+                    <label class="the-floater" for="address">School Address</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="motto" name="motto" value="{{ records.school.motto }}" required>
+                    <label class="the-floater" for="motto">School Motto</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/add_system_data" method="post" role="form">
+            <div class="modal-body">
+              <select class="mb-2 form-control" name="category" required>
+                <option value="" disabled="disabled" selected>Select Data Type</option>
+                {%for item in records.data_items%}
+                <option value="{{ item }}">{{ item }}s</option>
+                {%endfor%}
+              </select>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Comma Separated Names</label>
+                </div>
+              <input type="hidden" name="item_id" value="{{ records.school.id }}">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--End Page Modals-->
+{% endblock %}

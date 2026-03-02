@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-box1 icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Stock
+                            <div class="page-title-subheading">View all your Inventory.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-success" href="/inventory/store/ujuzi" role="button">Stores</a>
+                        <a class="btn btn-info" data-toggle="collapse" href="#units" role="button">Add Units</a>
+                        <a class="btn btn-info" data-toggle="collapse" href="#product" role="button">New Product</a>
+                        <a class="btn btn-info" data-toggle="collapse" href="#stock" role="button">Add Stock</a>
+                        <a class="btn btn-secondary" href="/report/s1" role="button">S1 Report</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">Stock</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive collapse" id="units">
+                            <div class="card-body"><h5 class="card-title">New Measuring Unit</h5>
+                                <form action="/new/unit" method="post" role="form">
+                                  <input type="text" class="mb-2 form-control" name="name" placeholder="Unit Name" required>
+                                  <input type="text" class="mb-2 form-control" name="sub_unit" placeholder="Divided into">
+                                  <input type="number" class="mb-2 form-control" name="sub_value" placeholder="Division per unit">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        {%for item in records.stock%}
+                        <div class="table-responsive collapse" id="re_order_{{ item.id }}">
+                            <div class="card-body">
+                                <form class="form-inline" action="/new_po/stock" method="post" role="form">
+                                    <div class="mb-2 mr-sm-2 mb-sm-0 position-relative input-group">
+                                        <div class="input-group-prepend"><span style="width: 300px;" class="input-group-text mb-2">Re-Order {{ item.name }}</span></div>
+                                        <select class="mb-2 form-control" name="supplier_id" required>
+                                            <option value="" selected disabled>Select Supplier</option>
+                                            {%for item in records.suppliers%}
+                                            <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {%endfor%}
+                                        </select>
+                                        <input type="hidden" name="product_id" value="{{ item.id }}">
+                                        <input type="hidden" name="specification" value="{{ item.description }}">
+                                        <input type="hidden" name="quantity" value="{{ item.reorder_quantity }}">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Order</button>                            
+                                </form>
+                                <div class="divider"></div>
+                            </div>
+                        </div>
+                        {%endfor%}
+                        <div class="table-responsive collapse" id="product">
+                            <div class="card-body"><h5 class="card-title">New Product</h5>
+                                <form action="/new/product" method="post" role="form">
+                                  <input type="text" class="mb-2 form-control" name="name" placeholder="Item Name" required>
+                                  <input type="text" class="mb-2 form-control" name="description" placeholder="Optional Description">
+                                  <select class="mb-2 form-control" name="unit_id" required onchange="select_other(this.value, 'unit')" required>
+                                    <option value="" selected disabled>Select Unit of Measure</option>
+                                    {%for item in records.units%}
+                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                    {%endfor%}
+                                    <option value="0">New Unit</option>
+                                  </select>
+                                  <input type="text" style="display: none;" class="mb-2 form-control" id="unit" name="unit" placeholder="Unit Name">
+                                  <input type="number" class="mb-2 form-control" name="cost" placeholder="Unit Cost" required>
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive collapse" id="stock">
+                            <div class="card-body"><h5 class="card-title">Add Stock</h5>
+                                <form action="/add_stock" method="post" role="form">
+                                  <select class="mb-2 form-control" name="product_id" required>
+                                    <option value="" selected disabled>Select Product</option>
+                                    {%for item in records.stock%}
+                                        {%if item.category == "s1"%}
+                                    <option value="{{ item.id }}">{{ item.name }} in {{ item.unit.name }}</option>
+                                        {%endif%}
+                                    {%endfor%}
+                                  </select>
+                                  <select class="mb-2 form-control" name="store_id" required>
+                                    <option value="" selected disabled>Select Store</option>
+                                    {%for item in records.stores%}
+                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                    {%endfor%}
+                                  </select>
+                                  <input type="number" min="0" class="mb-2 form-control" name="quantity" placeholder="Quantity Available" required>
+                                  <button type="submit" class="btn btn-primary">Add</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Product</th>
+                                    <th>Units</th>
+                                    <th class="text-center">Re-Order Level</th>
+                                    <th class="text-center">Re-Order Quantity</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-right">Price</th>
+                                    <th class="text-right">Value</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%set ns = namespace(total = 0)%}
+                                {%for item in records.stock%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ item.id }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.unit.name }}</td>
+                                    <td class="text-center">{{ item.reorder_level}}</td>
+                                    <td class="text-center">{{ item.reorder_quantity}}</td>
+                                    <td class="text-center">{{ item.quantity}}</td>
+                                    <td class="text-right">{{ item.cost |round }}</td>
+                                    <td class="text-right">
+                                    {%if item.category == "s1"%}
+                                        {{ (item.cost * item.quantity) |round }}
+                                    {%else%}
+                                        {%for asset in item.assets%}
+                                        {%endfor%}
+                                    {%endif%}
+                                    </td>
+                                    <td class="text-center">
+                                    {%if item.reorder_level > item.quantity%}
+                                        <a class="btn btn-warning" data-toggle="collapse" href="#re_order_{{ item.id }}" role="button">Re-Order</a>
+                                    {%else%}
+                                    {%endif%}
+                                        <a class="btn btn-info" href="/inventory/product/{{ item.uuid }}" role="button">View</a>
+                                    </td>
+                                </tr>
+                                {%set ns.total = ns.total + item.cost * item.quantity %}
+                                {%endfor%}
+                                </tbody>
+                                <tr>
+                                    <th class="text-center"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th class="text-right">Total Cost</th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right">{{ ns.total |round }}</th>
+                                    <th></th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

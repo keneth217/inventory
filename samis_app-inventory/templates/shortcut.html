@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-diskette icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Shortcuts
+                            <div class="page-title-subheading">Add quick link to Home Page
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">Shortcuts</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <div class="card-body">
+                                <form action="/shortcut/save" method="post" role="form">
+                                  <input disabled class="mb-2 form-control" name="page" placeholder="{{ records.address }}{{ records.link }}" required>
+                                  <input type="text" class="mb-2 form-control" name="name" placeholder="Shortcut Name" required>
+                                  <select class="mb-2 form-control" name="icon" required>
+                                    <option value="" disabled="disabled" selected>Select Icon</option>
+                                    <option value="pendrive">Flash Disck</option>
+                                    <option value="smile">Smiley Face</option>
+                                    <option value="light">Light Bulb</option>
+                                    <option value="like">Heart</option>
+                                    <option value="car">Car</option>
+                                  </select>
+                                  <input type="text" class="mb-2 form-control" name="description" placeholder="Optional Description">
+                                  <input type="hidden" name="link" value="{{ records.link }}">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'samis_admin/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-less icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>{{ records.school.name }}
+                            <div class="page-title-subheading">{{ records.school.address }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#school" role="button">Edit School</a>
+                        {%if records.school.status == "Active"%}
+                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#suspend" role="button">Suspend</a>
+                        {%else%}
+                        <a class="btn btn-success" href="#" data-toggle="modal" data-target="#suspend" role="button">Activate</a>
+                        {%endif%}
+                        <a class="btn btn-success" href="#" data-toggle="modal" data-target="#subscribe" role="button">Subscribe</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Super Admin</a></li>
+                    <li class="breadcrumb-item"><a href="/samis/school/{{ session.user.uuid }}">Schools</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">{{ records.school.name }}</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <div class="card-body"><h5 class="card-title">School Details</h5>
+                                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                    <tr>
+                                        <th>Name</th>
+                                        <td>{{ records.school.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status</th>
+                                        <td>{{ records.school.status }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone Number</th>
+                                        <td>{{ records.school.phone }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email Address</th>
+                                        <td>{{ records.school.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address</th>
+                                        <td>{{ records.school.address }}</td>
+                                    </tr>
+                                    {%for item in records.school.users%}
+                                    {%if "Admin" in item.rights%}
+                                    <tr>
+                                        <th>{{ item.employee.designation }}</th>
+                                        <td>{{ item.employee.name }}: <b>{{ item.phone }}</b></td>
+                                    </tr>
+                                    {%endif%}
+                                    {%endfor%}
+                                    <tr>
+                                        <th>Subscriptions</th>
+                                        <td>
+                                            {%for item in records.school.subscriptions%}
+                                            | {{ item.service.name }}
+                                            {%endfor%} |
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<div class="modal fade" id="school" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit School</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/edit_school" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" value="{{ records.school.name }}">
+                    <label class="the-floater" for="name">School Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="phone" name="phone" placeholder="" value="{{ records.school.phone }}">
+                    <label class="the-floater" for="phone">Phone Number</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="address" name="address" placeholder="" value="{{ records.school.address }}">
+                    <label class="the-floater" for="address">Address</label>
+                </div>
+                <p class="mb-0">Enter School data above.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" disabled>Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="subscribe" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Subscribe to Module</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/subscribe" method="post" role="form">
+            <div class="modal-body">
+                <select class="mb-2 form-control" name="service_id" required>
+                    <option value="" disabled="disabled" selected>Select Module</option>
+                    {%for item in records.modules%}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {%endfor%}
+                </select>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="remarks" name="remarks" placeholder="">
+                    <label class="the-floater" for="remarks">Remarks</label>
+                </div>
+                <p class="mb-0">Select Module above.</p>
+                <input type="hidden" name="school_id" value="{{ records.school.id }}">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="suspend" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {%if records.school.status == "Active"%}
+                    Suspend School
+                    {%else%}
+                    Activate School
+                    {%endif%}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/suspend_school" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="remarks" name="remarks" placeholder="">
+                    <label class="the-floater" for="remarks">Remarks</label>
+                </div>
+                <input type="hidden" name="school_id" value="{{ records.school.id }}">
+                {%if records.school.status == "Active"%}
+                <input type="hidden" name="status" value="Susoended">
+                {%else%}
+                <input type="hidden" name="status" value="Active">
+                {%endif%}
+                <p class="mb-0">Enter the data above.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--End Page Modals-->
+{% endblock %}

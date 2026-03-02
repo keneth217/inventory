@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>SAMIS School Management - Reset Password</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="Samis is an Information Management System for education sector establishments used to manage a school’s student, academic and management data..">
+    <meta name="msapplication-tap-highlight" content="no">
+    <style type="text/css" media="print">
+        @page {
+            size: auto;   /* auto is the initial value */
+            margin: 0;  /* this affects the margin in the printer settings */
+        }
+    </style>
+
+    <link href="/static/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+</head>
+<body>
+    <div class="app-container app-theme-white body-tabs-shadow fixed-header">
+      
+        <div class="app-main">
+               
+                <div class="app-main__outer">
+                    <div class="app-main__inner">
+                        <div class="row">
+                            <div class="col-md-4" style="margin: auto;">
+                                <div class="main-card mb-3 card">
+                                    <div class="card-body"><h5 class="card-title text-center">Change Password</h5>
+                                        {%with messages = get_flashed_messages(with_categories=True)%}
+                                        {%if messages%}
+                                            {%for category, message in messages%}
+                                            <div class="alert alert-{{ category }}">
+                                              {{ message }}
+                                            </div>
+                                            {%endfor%}
+                                        {%endif%}
+                                        {%endwith%}
+                                        {%if records is none%}
+                                        <form action="/reset_pass/send" method="post" role="form">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-mail"></i></span></div>
+                                                <input placeholder="Enter Email Address or Phone No" type="text" class="mb-2 form-control" name="phone" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Request</button>
+                                            <a class="btn btn-info" href="/" role="button">Login</a>
+                                            <br><br>
+                                        </form>
+                                        {%elif records == "code"%}
+                                        <form action="/reset_pass/verify" method="post" role="form">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-lock"></i></span></div>
+                                                <input placeholder="Enter Code Received" type="text" class="mb-2 form-control" name="code" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Verify</button>
+                                            <a class="btn btn-info" href="/" role="button">Cancel</a>
+                                            <br><br>
+                                        </form>
+                                        {%else%}
+                                        <form action="/reset_pass/change" method="post" role="form">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-lock"></i></span></div>
+                                                <input placeholder="Enter New Password" type="password" class="mb-2 form-control" id="pwd" name="pwd" required>
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-lock"></i></span></div>
+                                                <input placeholder="Repeat New Password" type="password" class="mb-2 form-control" id="pwd2" name="pwd2" required>
+                                                <input type="hidden" name="user_id" value="{{ records.id }}">
+                                            </div>
+                                            <p id="msg" class="text-danger" style="display: none;">The passwords <b>must</b> match!</p>
+                                            <button type="submit" class="btn btn-primary" id="save" disabled>Change</button>
+                                            <a class="btn btn-info" href="/" role="button">Cancel</a>
+                                            <br><br>
+                                        </form>
+                                        {%endif%}
+                                    <small>Samis v.{{ session.version }} .  &copy; 2024 <strong>Samis Systems LTD</strong>. All Rights Reserved</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+        </div>
+        <script>
+            var pwd = document.getElementById("pwd");
+            var pwd2 = document.getElementById("pwd2");
+            var msg = document.getElementById("msg");
+
+            pwd2.onfocus = function() {
+                msg.style.display = "block";
+            }
+
+            pwd2.onkeyup = function() {
+                if(pwd2.value == pwd.value) {
+                    msg.classList.remove("text-danger");
+                    msg.classList.add("text-success");
+                    document.getElementById("save").disabled = false;
+                    msg.style.display = "none";
+                } else {
+                    msg.classList.remove("text-success");
+                    msg.classList.add("text-danger");
+                    document.getElementById("save").disabled = true;
+                    msg.style.display = "block";
+                }
+            }
+        </script>
+    </div>
+<script type="text/javascript" src="/static/scripts/main.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/imagemapster/1.6.0/jquery.imagemapster.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</body>
+</html>

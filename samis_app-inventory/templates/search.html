@@ -1,0 +1,33 @@
+{% extends "inventory/base.html" %}
+{% block content %}
+<div class="app-main__inner">
+    <nav class="" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="active breadcrumb-item" aria-current="page">Search Results</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-card mb-3 card">
+                <div class="card-body"><h5 class="card-title">{{ results.list |length }} results found for "{{ results.query }}"</h5>
+                    <ul class="list-group">
+                        {%for item in results.list%}
+                        <li class="list-group-item">
+                            <h5 class="list-group-item-heading">
+                                <a href="/inventory/{{ item.category }}/{{ item.uuid }}">{{ item.category |title}}: {{ item.name }}</a>
+                            </h5>
+                            <p class="list-group-item-text">{{ item.terms }}</p>
+                        </li>
+                        {%endfor%}
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+  {% endblock %}

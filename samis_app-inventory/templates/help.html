@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main__inner">
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-ticket icon-gradient bg-mean-fruit">
+                    </i>
+                </div>
+                <div>{{ records.agency.name }}
+                    <div class="page-title-subheading">{{ records.subject }} - {{ records.status }}
+                    </div>
+                </div>
+            </div>
+            <div class="page-title-actions">
+                <a class="btn btn-info" data-toggle="collapse" href="#reply" role="button">Reply</a>
+            </div>
+        </div>
+    </div>
+    <nav class="" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/help/{{ session.user.uuid }}">Help</a></li>
+            <li class="active breadcrumb-item" aria-current="page">{{ records.agency.name }}</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-card mb-3 card">
+                <div class="table-responsive collapse" id="reply">
+                    <div class="card-body"><h5 class="card-title">Reply to Ticket</h5>
+                        <form action="/help_msgs" method="post" role="form">
+                          <select class="mb-2 form-control" name="status" required>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Escalated">Escalated</option>
+                            <option value="Resolved">Resolved</option>
+                          </select>
+                          <textarea class="form-control" name="message" placeholder="Type your reply" required></textarea> <br>
+                          <input type="hidden" name="ticket_id" value="{{records.id}}">
+                          <button type="submit" class="btn btn-primary">Reply</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Ticket</th>
+                            <th>User</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {%for item in records.help_msgs%}
+                        <tr>
+                            <td class="text-center text-muted">{{ item.id }}</td>
+                            <td>{{ item.ticket.subject}}</td>
+                            <td><div class="widget-heading">{{ item.user.name }}</div></td>
+                            <td>{{ item.msg}}</td>
+                            <td>{{ item.date}}</td>
+                        </tr>
+                        {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+  {% endblock %}

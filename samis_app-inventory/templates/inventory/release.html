@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-note2 icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Release {{ records.rq_item.stock.product.name }}
+                            <div class="page-title-subheading">
+                                The following assets have been requested and approved for release
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/request/ujuzi">Requests</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/release/ujuzi">Release Assets</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">Release {{ records.rq_item.stock.product.name }}</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <div class="card-body"><h5 class="card-title">Release {{ records.rq_item.assets }} {{ records.rq_item.stock.product.name }} to {{ records.rq_item.request.department.name }}</h5>
+                                <form action="/release_assets" method="post" role="form">
+                                    <input type="checkbox" name="selectall" autocomplete="off" onclick="eventCheckBox('assets')"> Select All Assets
+                                    <div class="divider"></div>
+                                    {%for item in records.rq_item.stock.product.assets%}
+                                        {%if item.department_id is none%}
+                                    <div class="position-relative form-check form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" name="assets" value="{{ item.id }}">
+                                            {{ item.product.name }}: {{ item.name }} which is a <b>{{ item.description }}</b>  with serial no <b>{{ item.serial }}</b>
+                                        </label>
+                                    </div>
+                                    <div class="divider"></div>
+                                        {%endif%}
+                                    {%endfor%}
+                                    <input type="hidden" name="item_id" value="{{records.rq_item.id}}">
+                                    <button type="submit" class="btn btn-primary">Release</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

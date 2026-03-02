@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-note2 icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Return Outwards
+                            <div class="page-title-subheading">
+                                Supplier: <b>{{ records.order_item.purchase_order.supplier.name }}</b>
+                                <i class="metismenu-icon pe-7s-more"></i>
+                                Quantity: <b>{{ records.order_item.quantity - records.order_item.returned }}</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/order/ujuzi">Purchase Orders</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/order/{{ records.order_item.purchase_order.uuid }}">Purchase Order No. {{ records.order_item.purchase_order.id }}</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">Returns</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive" id="add">
+                            {%if records.order_item.product.category == "s1"%}
+                            <div class="card-body"><h5 class="card-title">Return Stock</h5>
+                                <form action="/return/out" method="post" role="form">
+                                    <input type="text" class="mb-2 form-control" name="name" value="{{ records.order_item.product.name }} to {{ records.order_item.purchase_order.supplier.name }}" disabled>
+                                    <input type="number" class="mb-2 form-control" name="quantity" min="0" placeholder="{{ records.order_item.product.unit.name }} Returned" required>
+                                    <input type="hidden" name="item_id" value="{{ records.order_item.id }}">
+                                    <button type="submit" class="btn btn-primary">Return</button>
+                                </form>
+                            </div>
+                            {%else%}
+                            <div class="card-body"><h5 class="card-title">Return Assets</h5>
+                                <form action="/return/asset" method="post" role="form">
+                                    <input type="checkbox" name="selectall" autocomplete="off" onclick="eventCheckBox('assets')"> Select All Assets
+                                    <div class="divider"></div>
+                                    {%for item in records.order_item.assets%}
+                                        {%if item.status != "returned"%}
+                                    <div class="position-relative form-check form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" name="assets" value="{{ item.id }}">
+                                            {{ item.product.name }}: {{ item.name }} which is a <b>{{ item.description }}</b> valued at <b>KES {{ item.value |round(2) }}</b>
+                                        </label>
+                                    </div>
+                                    <div class="divider"></div>
+                                        {%endif%}
+                                    {%endfor%}
+                                    <input type="text" class="mb-2 form-control" name="remarks" placeholder="Reason for Return">
+                                    <input type="hidden" name="quantity" value=0>
+                                    <input type="hidden" name="item_id" value="{{records.order_item.id}}">
+                                    <button type="submit" class="btn btn-primary">Return</button>
+                                </form>
+                            </div>
+                            {%endif%}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

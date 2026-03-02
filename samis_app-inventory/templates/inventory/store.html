@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-box1 icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Stock in {{ records.store.name }}
+                            <div class="page-title-subheading">Managed by: <b>{{ records.store.manager.name }}</b>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-success" data-toggle="collapse" href="#assign" role="button">Assign Manager</a>
+                        <a class="btn btn-info" data-toggle="collapse" href="#edit" role="button">Edit Store</a>
+                        <a class="btn btn-info" data-toggle="collapse" href="#stock" role="button">Add Stock</a>
+                        <a class="btn btn-warning" data-toggle="collapse" href="#move" role="button">Move Stock</a>
+                        <a class="btn btn-warning" data-toggle="collapse" href="#loss" role="button">Stock Loss</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/stock/ujuzi">Stock</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/store/ujuzi">Stores</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">{{ records.store.name }}</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive collapse" id="assign">
+                            <div class="card-body"><h5 class="card-title">Assign Manager</h5>
+                                <form action="/assign/store" method="post" role="form">
+                                    <select class="mb-2 form-control" name="employee_id" required>
+                                        <option value="" selected disabled>Select Manager</option>
+                                        {%for item in records.employees%}
+                                        <option value="{{ item.id }}">{{ item.name }}</option>
+                                        {%endfor%}
+                                    </select>
+                                <input type="hidden" name="item_id" value="{{records.store.id}}">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive collapse" id="edit">
+                            <div class="card-body"><h5 class="card-title">Edit Store</h5>
+                                <form action="/edit_item/store" method="post" role="form">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span style="width: 150px;" class="input-group-text mb-2">Name</span></div>
+                                        <input type="text" class="mb-2 form-control" name="name" value="{{records.store.name}}" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span style="width: 150px;" class="input-group-text mb-2">Location</span></div>
+                                        <input type="text" class="mb-2 form-control" name="location" value="{{records.store.location}}" required>
+                                    </div>
+                                  <input type="hidden" name="item_id" value="{{records.store.id}}">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive collapse" id="stock">
+                            <div class="card-body"><h5 class="card-title">Add Stock</h5>
+                                <form action="/add_stock" method="post" role="form">
+                                  <select class="mb-2 form-control" name="product_id" required>
+                                    <option value="" selected disabled>Select Product</option>
+                                    {%for item in records.products%}
+                                    <option value="{{ item.id }}">{{ item.name }} in {{ item.unit.name }}</option>
+                                    {%endfor%}
+                                  </select>
+                                  <input type="number" class="mb-2 form-control" name="quantity" placeholder="Quantity Available" required>
+                                  <input type="hidden" name="store_id" value="{{ records.store.id }}">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive collapse" id="move">
+                            <div class="card-body"><h5 class="card-title">Move Stock</h5>
+                                <form action="/move_stock" method="post" role="form">
+                                  <select class="mb-2 form-control" name="stock_id" required>
+                                    <option value="" selected disabled>Select Product</option>
+                                    {%for item in records.store.stock%}
+                                        {%if item.quantity > 0%}
+                                    <option value="{{ item.id }}">{{ item.product.name }} - {{ item.quantity }} {{ item.product.unit.name }}</option>
+                                        {%else%}
+                                    <option value="{{ item.id }}" disabled>{{ item.product.name }} - Out of Stock</option>
+                                        {%endif%}
+                                    {%endfor%}
+                                  </select>
+                                  <select class="mb-2 form-control" name="store_id" required>
+                                    <option value="" selected disabled>Select New Store</option>
+                                    {%for item in records.stores%}
+                                        {%if item.id != records.store.id%}
+                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                        {%endif%}
+                                    {%endfor%}
+                                  </select>
+                                  <input type="number" class="mb-2 form-control" name="quantity" placeholder="Quantity to Move" required>
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive collapse" id="loss">
+                            <div class="card-body"><h5 class="card-title">Stock Loss</h5>
+                                <form action="/stock_loss" method="post" role="form">
+                                  <select class="mb-2 form-control" name="stock_id" required>
+                                    <option value="" selected disabled>Select Product</option>
+                                    {%for item in records.store.stock%}
+                                        {%if item.quantity > 0%}
+                                    <option value="{{ item.id }}">{{ item.product.name }} - {{ item.quantity }} {{ item.product.unit.name }}</option>
+                                        {%else%}
+                                    <option value="{{ item.id }}" disabled>{{ item.product.name }} - Out of Stock</option>
+                                        {%endif%}
+                                    {%endfor%}
+                                  </select>
+                                  <select class="mb-2 form-control" name="reason" required>
+                                    <option value="" selected disabled>Select Reason</option>
+                                    <option value="Theft">Theft</option>
+                                    <option value="Breakage">Breakage</option>
+                                    <option value="Expiry">Expiry</option>
+                                    <option value="Other">Other</option>
+                                  </select>
+                                  <input type="text" class="mb-2 form-control" name="remarks" placeholder="Remarks">
+                                  <input type="number" class="mb-2 form-control" name="quantity" placeholder="Quantity Lost" required>
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Product</th>
+                                    <th>Units</th>
+                                    <th class="text-right">Price</th>
+                                    <th class="text-right">Quantity</th>
+                                    <th class="text-right">Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%set ns = namespace(total = 0)%}
+                                {%for item in records.store.stock%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ item.id }}</td>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.product.unit.name }}</td>
+                                    <td class="text-right">{{ item.product.cost |round }}</td>
+                                    <td class="text-right">{{ item.quantity}}</td>
+                                    <td class="text-right">{{ (item.product.cost * item.quantity) |round }}</td>
+                                </tr>
+                                {%set ns.total = ns.total + item.product.cost * item.quantity %}
+                                {%endfor%}
+                                </tbody>
+                                <tr>
+                                    <th class="text-center"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th class="text-right">Total Cost</th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right">{{ ns.total |round }}</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

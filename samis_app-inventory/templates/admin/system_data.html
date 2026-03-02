@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'admin/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-config icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>{{ records.category }}s
+                            <div class="page-title-subheading">View and manage your data
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#{{ records.category |lower }}" role="button">Add {{ records.category }}</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/settings/all">System Data</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">{{ records.category }}s</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>{{ records.category }}</th>
+                                    <th class="text-center">Description</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%for item in records.data_items%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ item.id }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td class="text-center">{{ item.description }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td class="text-center">
+                                        <a class="btn btn-danger" data-toggle="modal" data-target="#delete_{{ item.id }}">Delete</a>
+                                    </td>
+                                </tr>
+                                {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<div class="modal fade" id="department" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Department</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new/department" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Department Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="description" name="description" placeholder="" required>
+                    <label class="the-floater" for="description">Description</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="employee" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new/employee" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Full Name</label>
+                </div>
+                <select class="mb-2 form-control" name="department_id" required>
+                    <option value="" disabled="disabled" selected>Select Department</option>
+                    {%for item in records.school.departments%}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {%endfor%}
+                </select>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="location" name="location" placeholder="" required>
+                    <label class="the-floater" for="location">Current Location</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Supplier</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new/supplier" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Supplier's Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="phone" name="phone" placeholder="" required>
+                    <label class="the-floater" for="phone">Phone Number</label>
+                </div>
+              <p id="phone_msg" class="text-danger" style="display: none;">Invalid Phone Number entered!</p>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="address" name="address" placeholder="">
+                    <label class="the-floater" for="address">Address</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="unit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Measuring Unit</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new/unit" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Unit Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="sub_unit" name="sub_unit" placeholder="">
+                    <label class="the-floater" for="sub_unit">Divided Into</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="sub_value" name="sub_value" placeholder="">
+                    <label class="the-floater" for="sub_value">Divisions per unit</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="store" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Store</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new/store" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Store Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="location" name="location" placeholder="">
+                    <label class="the-floater" for="location">Store Location</label>
+                </div>
+              <select class="mb-2 form-control" name="manager_id" required>
+                <option value="" selected disabled>Select Manager</option>
+                {%for item in records.employees%}
+                <option value="{{ item.id }}">{{ item.name }}</option>
+                {%endfor%}
+              </select>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="product" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new/product" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Item Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="description" name="description" placeholder="">
+                    <label class="the-floater" for="description">Optional Description</label>
+                </div>
+              <select class="mb-2 form-control" name="unit_id" required onchange="select_other(this.value, 'units')">
+                <option value="" selected disabled>Select Unit of Measure</option>
+                {%for item in records.school.units%}
+                <option value="{{ item.id }}">{{ item.name }}</option>
+                {%endfor%}
+                <option value="0">New Unit</option>
+              </select>
+                <div class="form-group" style="display: none;" id="units">
+                    <input type="text" class="mb-2 form-control" id="name" name="unit" placeholder="">
+                    <label class="the-floater" for="name">Unit Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="cost" name="cost" placeholder="" required>
+                    <label class="the-floater" for="cost">Unit Cost</label>
+                </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{%for item in records.data_items%}
+<div class="modal fade bd-example-modal-sm" id="delete_{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Please Confirm!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>You are about to delete the {{ records.category }} <b>{{ item.name }}</b></p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-danger" href="/delete/{{ records.category |lower }}/{{ item.uuid }}" role="button">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+{%endfor%}
+<!--End Page Modals-->
+{% endblock %}

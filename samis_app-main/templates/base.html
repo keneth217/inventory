@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Samis - {{ records.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="Samis is an Information Management System for education sector establishments used to manage a school’s student, academic and management data..">
+    <meta name="msapplication-tap-highlight" content="no">
+    <style type="text/css" media="print">
+        @page {
+            size: auto;   /* auto is the initial value */
+            margin: 0;  /* this affects the margin in the printer settings */
+        }
+    </style>
+
+    <link href="/static/main.css" rel="stylesheet">
+    <link href="/static/samis.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+</head>
+<body>
+    <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+        <div class="app-header header-shadow d-print-none bg-night-sky header-text-light">
+            <div class="app-header__logo">
+                <!--a href="/" class="nav-link">
+                    <div class="badge badge-success mr-1 ml-0">
+                        <large>Ziddi App</large>
+                    </div>
+                </a-->
+                <div class="logo-src"></div>
+                <div class="header__pane ml-auto">
+                    <div>
+                        <button type="button" class="hamburger close-sidebar-btn hamburger--elastic" data-class="closed-sidebar">
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="app-header__mobile-menu">
+                <div>
+                    <button type="button" class="hamburger hamburger--elastic mobile-toggle-nav">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="app-header__menu">
+                <span>
+                    <button type="button" class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+                        <span class="btn-icon-wrapper">
+                            <i class="fa fa-ellipsis-v fa-w-6"></i>
+                        </span>
+                    </button>
+                </span>
+            </div>
+            <!-- Top menu start -->
+            <div class="app-header__content">
+                <!--div class="app-header-left">
+                    <div class="search-wrapper">
+                        <div class="input-holder">
+                            <input id="text" type="text" class="search-input" placeholder="Type to search">
+                            <button id="search" class="search-icon"><span></span></button>
+                        </div>
+                            <button class="close"></button>
+                    </div>
+                </div-->
+                <form action="#" method="post" role="form">
+                    <input type="hidden" name="link" value="{{ session.previous }}">
+                    <button type="submit" class="btn btn-success" disabled>Add to Home</button>
+                </form>
+            </div>
+            <!-- Top menu end -->
+        </div> 
+
+                    {% block content %}
+                    {% endblock %}
+
+    </div>
+<script type="text/javascript" src="/static/scripts/main.js"></script>
+<script type="text/javascript" src="/static/scripts/samis.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/imagemapster/1.6.0/jquery.imagemapster.js"></script>
+<script type="text/javascript">
+    new DataTable('#myTable', {
+    order: [[0, 'desc']]
+    });
+
+    $(function () { 
+        $("#datepicker").datepicker({  
+            autoclose: true,  
+            todayHighlight: true, 
+            todayBtn : "linked", 
+        }).datepicker('update', new Date()); 
+    }); 
+
+    $('img[usemap]').mapster({
+      fillColor: '61bf0a',
+      stroke: true,
+      singleSelect: true,
+      strokeColor: 'ff0000',
+      strokeOpacity: 1,
+      strokeWidth: 5,
+      clickNavigate: true
+    });
+
+    var search_btn = document.getElementById("search");
+    var input = document.getElementById("text");
+
+    input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            var search = input.value;
+            if (search !== "") {
+                location.replace("/search/" + search)
+            }
+        }
+    });
+</script>
+</body>
+</html>

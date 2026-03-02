@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>SAMIS School Management - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="Samis is an Information Management System for education sector establishments used to manage a school’s student, academic and management data..">
+    <meta name="msapplication-tap-highlight" content="no">
+    <style type="text/css" media="print">
+        @page {
+            size: auto;   /* auto is the initial value */
+            margin: 0;  /* this affects the margin in the printer settings */
+        }
+    </style>
+
+    <link href="/static/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+</head>
+<body>
+    <div class="app-container app-theme-white body-tabs-shadow fixed-header">
+      
+        <div class="app-main">
+               
+                <div class="app-main__outer">
+                    <div class="app-main__inner">
+                        <div class="row">
+                            <div class="col-md-4" style="margin: auto;">
+                                <div class="main-card mb-3 card">
+                                    <div class="card-body"><h5 class="card-title text-center">Login Required</h5>
+                                        {%with messages = get_flashed_messages(with_categories=True)%}
+                                        {%if messages%}
+                                            {%for category, message in messages%}
+                                            <div class="alert alert-{{ category }}">
+                                              {{ message }}
+                                            </div>
+                                            {%endfor%}
+                                        {%endif%}
+                                        {%endwith%}
+                                        <form action="/login" method="post" role="form">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-mail"></i></span></div>
+                                                <input placeholder="Phone No or Email Address" type="text" class="mb-2 form-control" name="phone" required>
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-lock"></i></span></div>
+                                                <input placeholder="Password" type="password" class="mb-2 form-control" name="password" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Login</button>
+                                            <a class="btn btn-warning" href="/reset_pass/code" role="button">Reset Password</a>
+                                            <br><br>
+                                            <small>Samis v.{{ session.version }} .  &copy; 2025 <strong>Samis Systems LTD</strong>. All Rights Reserved</small>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+        </div>
+    </div>
+<script type="text/javascript" src="/static/scripts/main.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/imagemapster/1.6.0/jquery.imagemapster.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</body>
+</html>

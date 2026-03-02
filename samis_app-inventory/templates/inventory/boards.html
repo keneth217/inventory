@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-print icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>{{ session.school.name }}
+                            <div class="page-title-subheading">Inventory Management</div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-success" href="/shortcuts" role="button">Shortcuts</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="active breadcrumb-item" aria-current="page">Home</li>
+                </ol>
+            </nav>
+            <div class="row">
+                {%if records.reorder_items > 0%}
+                <a href="/inventory/reorder/{{ session.user.uuid }}" class="col-md-6 col-xl-4">
+                    <div class="card mb-3 widget-content bg-danger">
+                        <div class="widget-content-outer">
+                            <div class="widget-content-wrapper  text-white">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">Re-Order Items</div>
+                                    <div class="widget-subheading">You have items that require Re-Order!</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-warning"><i class="metismenu-icon pe-7s-info"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {%endif%}
+                {%if "Admin" in session.user.rights%}
+                <a href="/settings/all" class="col-md-6 col-xl-4">
+                    <div class="card mb-3 widget-content bg-info">
+                        <div class="widget-content-outer">
+                            <div class="widget-content-wrapper  text-white">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">System Data</div>
+                                    <div class="widget-subheading">Configure your system!</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-warning"><i class="metismenu-icon pe-7s-tools"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {%endif%}
+                {%if records.unreleased_items > 0%}
+                <a href="/inventory/release/{{ session.user.uuid }}" class="col-md-6 col-xl-4">
+                    <div class="card mb-3 widget-content bg-danger">
+                        <div class="widget-content-outer">
+                            <div class="widget-content-wrapper  text-white">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">Release Items</div>
+                                    <div class="widget-subheading">You have unreleased items in your tray!</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-warning"><i class="metismenu-icon pe-7s-info"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {%endif%}
+                {%for item in records.shortcuts%}
+                    {%if item.status == "Active"%}
+                <a href="{{ item.link }}" class="col-md-6 col-xl-4">
+                    <div class="card mb-3 widget-content">
+                        <div class="widget-content-outer">
+                            <div class="widget-content-wrapper">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">{{ item.name }}</div>
+                                    <div class="widget-subheading">{{ item.description }}</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-success"><i class="metismenu-icon pe-7s-{{ item.icon }}"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                    {%endif%}
+                {%endfor%}
+
+                <a href="/inventory/department/{{ session.user.uuid }}" class="col-md-6 col-xl-4">
+                    <div class="card mb-3 widget-content bg-info">
+                        <div class="widget-content-outer">
+                            <div class="widget-content-wrapper  text-white">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">Departments</div>
+                                    <div class="widget-subheading">View all school departments</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-warning">{{ records.departments |count }}</i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="/inventory/store/{{ session.user.uuid }}" class="col-md-6 col-xl-4">
+                    <div class="card mb-3 widget-content bg-info">
+                        <div class="widget-content-outer">
+                            <div class="widget-content-wrapper  text-white">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">Stores</div>
+                                    <div class="widget-subheading">View all school stores</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-warning">{{ records.stores |count }}</i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="/inventory/supplier/{{ session.user.uuid }}" class="col-md-6 col-xl-4">
+                    <div class="card mb-3 widget-content bg-info">
+                        <div class="widget-content-outer">
+                            <div class="widget-content-wrapper  text-white">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">Suppliers</div>
+                                    <div class="widget-subheading">View all school suppliers</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-warning">{{ records.suppliers |count }}</i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="/inventory/employee/{{ session.user.uuid }}" class="col-md-6 col-xl-4">
+                    <div class="card mb-3 widget-content bg-info">
+                        <div class="widget-content-outer">
+                            <div class="widget-content-wrapper  text-white">
+                                <div class="widget-content-left">
+                                    <div class="widget-heading">Employees</div>
+                                    <div class="widget-subheading">View all school employees</div>
+                                </div>
+                                <div class="widget-content-right">
+                                    <div class="widget-numbers text-warning">{{ records.employees |count }}</i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

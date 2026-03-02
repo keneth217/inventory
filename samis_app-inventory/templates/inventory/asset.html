@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-print icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>{{ records.asset.name }}: {{ records.asset.serial }}
+                            <div class="page-title-subheading">{{ records.asset.description}}
+                                <div class="mb-2 mr-2 badge badge-success">{{ records.asset.status }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-success" href="#" data-toggle="modal" data-target="#assign" role="button">Assign</a>
+                        <a class="btn btn-success" href="#" data-toggle="modal" data-target="#move" role="button">Move</a>
+                        {%if records.asset.service > 0%}
+                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#service" role="button">Service</a>
+                        {%endif%}
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#edit" role="button">Edit</a>
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#metrics" role="button">Metrics</a>
+                        <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#dispose" role="button">Dispose</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/inventory/asset/ujuzi">Assets</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">{{ records.asset.name }}</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Asset Details</h5>
+                            <div class="table-responsive">
+                                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                    <tr>
+                                        <th>Asset Type</th>
+                                        <td>{{ records.asset.product.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Asset Tag</th>
+                                        <td>{{ records.asset.tag }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Current Assignment</th>
+                                        <td>{{ records.asset.owner.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Current Location</th>
+                                        <td>{{ records.asset.department.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Current Value</th>
+                                        <td>{{ "{:,.0f}".format(records.asset.value) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Depreciation Rate</th>
+                                        <td>{{ records.asset.depreciation }}%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Key Dates</h5>
+                            <div class="table-responsive">
+                                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                    <tr>
+                                        <th>Acquired On</th>
+                                        <td>{{ records.asset.acquired_on }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Disposed On</th>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Waranty Expiry</th>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Last Service</th>
+                                        <td>
+                                            {%if records.asset.maintenances |length > 0%}
+                                            {{ records.asset.maintenances[-1].date }}
+                                            {%endif%}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Next Service</th>
+                                        <td>
+                                            {%if records.asset.maintenances |length > 0%}
+                                            {{ records.asset.maintenances[-1].next_service }}
+                                            {%endif%}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Last Activity</th>
+                                        <td>
+                                            {%if records.asset.activities |length > 0%}
+                                            {{ records.asset.activities[-1].date }}
+                                            {%endif%}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="page-break-after: always;"></div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Asset Tracking</h5>
+                            <div class="table-responsive">
+                                <table class="align-middle mb-0 table table-borderless table-striped table-hover" id="myTable">
+                                    <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Activity</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {%for item in records.asset.activities%}
+                                    <tr>
+                                        <td>{{ item.date }}</td>
+                                        <td>{{ item.details }}</td>
+                                        <td>{{ item.remarks }}</td>
+                                    </tr>
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<div class="modal fade" id="assign" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Assign Asset</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/assign/asset" method="post" role="form">
+            <div class="modal-body">
+                <select class="mb-2 form-control" name="employee_id" required>
+                    <option value="" selected disabled>Assigned to</option>
+                    {%for item in records.employees%}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {%endfor%}
+                </select>
+                <input type="hidden" name="item_id" value="{{records.asset.id}}">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="move" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Assign Asset</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/move/asset" method="post" role="form">
+            <div class="modal-body">
+                <select class="mb-2 form-control" name="department_id" required>
+                    <option value="" selected disabled>Move to</option>
+                    {%for item in records.departments%}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {%endfor%}
+                </select>
+                <input type="hidden" name="asset_id" value="{{records.asset.id}}">
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Asset</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/edit_asset/details" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" value="{{ records.asset.name }}" required>
+                    <label class="the-floater" for="name">Asset Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="serial" name="serial" placeholder="" value="{{ records.asset.serial }}" required>
+                    <label class="the-floater" for="serial">Serial No</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="tag" name="tag" placeholder="" value="{{ records.asset.tag }}" required>
+                    <label class="the-floater" for="tag">Asset Tag</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="description" name="description" placeholder="" value="{{ records.asset.description }}" required>
+                    <label class="the-floater" for="description">Description</label>
+                </div>
+                <input type="hidden" name="asset_id" value="{{records.asset.id}}">
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="metrics" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Set Metrics</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/edit_asset/metrics" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="service2" name="service" placeholder="" value="{{ records.asset.service }}" required>
+                    <label class="the-floater" for="service2">Months Between Service</label>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="waranty" name="waranty" placeholder="" value="{{ records.asset.waranty }}" required>
+                    <label class="the-floater" for="waranty">Waranty in Months</label>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="depreciation" name="depreciation" placeholder="" value="{{ records.asset.depreciation }}" required>
+                    <label class="the-floater" for="depreciation">Depreciation % Rate</label>
+                </div>
+                <input type="hidden" name="asset_id" value="{{records.asset.id}}">
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="service" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Service Equipment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/maintain" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="company" name="company" placeholder="" required>
+                    <label class="the-floater" for="company">Service Company</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="technician" name="technician" placeholder="" required>
+                    <label class="the-floater" for="technician">Technician</label>
+                </div>
+                <input type="hidden" name="asset_id" value="{{records.asset.id}}">
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dispose" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="exampleModalLabel">Dispose Asset</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/dispose/asset" method="post" role="form">
+            <div class="modal-body">
+                <select class="mb-2 form-control" name="reason" required>
+                    <option value="" selected disabled>Reason for Disposal</option>
+                    <option value="break down">Broken Down</option>
+                    <option value="raise money">Raise Money</option>
+                    <option value="old">Old Asset</option>
+                </select>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Sold To</label>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="price" name="price" placeholder="" required>
+                    <label class="the-floater" for="price">Cash Received</label>
+                </div>
+                <input type="hidden" name="asset_id" value="{{records.asset.id}}">
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--End Page Modals-->
+{% endblock %}

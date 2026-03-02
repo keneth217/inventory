@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-key icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>System User Guide
+                            <div class="page-title-subheading">Learn how to use the Samis Inventory Management System
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Users and Departments</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select Departments</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all departments <br>
+                                    View number of employees in each department <br>
+                                    View number of assets in each department <br>
+                                    Create new department <br>
+                                    Add a new user to a department <br>
+                                </ol>
+                            </nav>
+                            <p class="text-muted">Select one department to view its data</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all employees in the department <br>
+                                    View all assets in the department <br>
+                                    Edit department details <br>
+                                    Request for stock and assets for the department <br>
+                                </ol>
+                            </nav>
+                            <p class="text-muted">Select one employee to view their data</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all employee details <br>
+                                    Edit employee details <br>
+                                    View all assets assigned to the employee <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Stores, Units and Products</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select Inventory</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all products and quantities in stock <br>
+                                    Create new product measuring units <br>
+                                    Create new products <br>
+                                    Add stock items for each product <br>
+                                </ol>
+                            </nav>
+                            <p class="text-muted">Select one product to view its data</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all the stores <br>
+                                    Create new store <br>
+                                </ol>
+                            </nav>
+                            <p class="text-muted">Select one store to view its data</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all products and quantities in the store <br>
+                                    Edit store details <br>
+                                    Add stock to the store <br>
+                                    Move stock to another store <br>
+                                    Record loss of stock <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Assets</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select Asset Regfster</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all the assets in the register <br>
+                                    Create a new asset type e.g. Computers <br>
+                                    Create a new asset <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Suppliers</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">On the side menu, Select Purchase Orders, then Suppliers</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View all your suppliers <br>
+                                    Create a new supplier <br>
+                                </ol>
+                            </nav>
+                            <p class="text-muted">Select one supplier to view their details</p>
+                            <p class="text-muted">Here you can perform the following operations</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    View the supplier's details <br>
+                                    View the orders the supplier has supplied <br>
+                                    Edit the supplier's details <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}

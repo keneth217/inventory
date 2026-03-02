@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'inventory/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-diskette icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Assets
+                            <div class="page-title-subheading">View all your Assets.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-title-actions">
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#asset_type" role="button">New Asset Type</a>
+                        <a class="btn btn-info" href="#" data-toggle="modal" data-target="#asset" role="button">New Asset</a>
+                        <a class="btn btn-secondary" href="/report/s2" role="button">S2 Report</a>
+                        <a class="btn btn-secondary" href="/report/s3" role="button">Asset Register</a>
+                    </div>
+                </div>
+            </div>
+            <nav class="" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="active breadcrumb-item" aria-current="page">Assets</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover" id="myTable">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Asset</th>
+                                    <th>Type</th>
+                                    <th>Serial/ No</th>
+                                    <th>Description</th>
+                                    <th>Location</th>
+                                    <th>Acquired On</th>
+                                    <th class="text-right">Value</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%set ns = namespace(count = 1, total = 0)%}
+                                {%for asset_type in records.asset_types%}
+                                    {%if asset_type.category == "s3"%}
+                                        {%for item in asset_type.assets%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ ns.count }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td><a class="btn btn-info" href="/inventory/asset_type/{{ asset_type.uuid }}" role="button">{{ item.product.name }}</a></td>
+                                    <td>{{ item.serial }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>{{ item.department.name }}</td>
+                                    <td>{{ item.acquired_on}}</td>
+                                    <td class="text-right">{{ "{:,.0f}".format(item.value) }}</td>
+                                    <td class="text-center">
+                                        <a class="btn btn-info" href="/inventory/asset/{{ item.uuid }}" role="button">View</a>
+                                    </td>
+                                </tr>
+                                {%set ns.count = ns.count + 1%}
+                                {%set ns.total = ns.total + item.value %}
+                                        {%endfor%}
+                                    {%else%}
+                                <tr>
+                                    <td class="text-center text-muted">{{ ns.count }}</td>
+                                    <td>{{ asset_type.name }}</td>
+                                    <td>S2 Items</td>
+                                    <td></td>
+                                    <td>{{ asset_type.assets |count }} {{ asset_type.name }}</td>
+                                    <td class="text-center">N/A</td>
+                                    <td class="text-center"></td>
+                                    <td class="text-right">{{ "{:,.0f}".format(asset_type.assets | sum(attribute='value')) }}</td>
+                                    <td class="text-center">
+                                        <a class="btn btn-info" href="/inventory/asset_type/{{ asset_type.uuid }}" role="button">View</a>
+                                    </td>
+                                </tr>
+                                {%set ns.count = ns.count + 1%}
+                                {%set ns.total = ns.total + asset_type.assets | sum(attribute='value') %}
+                                    {%endif%}
+                                {%endfor%}
+                                </tbody>
+                                <tr>
+                                    <th class="text-center"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th colspan="2" class="text-right">Total Value</th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right"></th>
+                                    <th class="text-right">{{ "{:,.0f}".format(ns.total) }}</th>
+                                    <th></th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'school_footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<div class="modal fade" id="asset_type" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Asset Type</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new/asset_type" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Asset Type Name</label>
+                </div>
+                  <select class="mb-2 form-control" name="category" required>
+                    <option selected disabled value="">Select Asset Class</option>
+                    <option value="s3">Long Term</option>
+                    <option value="s2">Short Term</option>
+                  </select>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="asset" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Asset</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/new/asset" method="post" role="form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="name" name="name" placeholder="" required>
+                    <label class="the-floater" for="name">Asset Name</label>
+                </div>
+                  <select class="mb-2 form-control" name="asset_type_id" required>
+                    <option selected disabled value="">Select Type</option>
+                    {%for item in records.asset_types%}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {%endfor%}
+                  </select>
+                  <select class="mb-2 form-control" name="owner_id" required>
+                    <option selected disabled value="">Select Manager</option>
+                    {%for item in records.employees%}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {%endfor%}
+                  </select>
+                  <select class="mb-2 form-control" name="location_id" required>
+                    <option selected disabled value="">Select Location</option>
+                    {%for item in records.stores%}
+                    <option value="store {{ item.id }}">Store - {{ item.name }}</option>
+                    {%endfor%}
+                    {%for item in records.departments%}
+                    <option value="department {{ item.id }}">Department - {{ item.name }}</option>
+                    {%endfor%}
+                  </select>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="serial" name="serial" placeholder="" required>
+                    <label class="the-floater" for="serial">Serial Number</label>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="value" name="value" placeholder="" required>
+                    <label class="the-floater" for="value">Market Value</label>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="mb-2 form-control" id="depreciation" name="depreciation" placeholder="">
+                    <label class="the-floater" for="depreciation">Depreciation Rate</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="mb-2 form-control" id="description" name="description" placeholder="">
+                    <label class="the-floater" for="description">Optional Description</label>
+                </div>
+                <div id="datepicker" class="input-group date" data-date-format="dd MM, yyyy">
+                    <div class="input-group-prepend"><span style="width: 100px;" class="input-group-text mb-2">Acquired On</span></div>
+                    <input type="text" class="mb-2 form-control" name="date" readonly /> 
+                    <span class="input-group-addon"> 
+                        <i class="glyphicon glyphicon-calendar"></i> 
+                    </span> 
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--End Page Modals-->
+{% endblock %}

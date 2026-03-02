@@ -1,0 +1,110 @@
+{% extends "academics/base.html" %}
+{% block content %}
+<div class="app-main__inner">
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon" style="padding: 0;">
+                    <img src="/static/images/photos/{{ records.user.employee.image }}" width="64" height="64">
+                </div>
+                <div>{{ records.user.name }}
+                    <div class="page-title-subheading">
+                        {{ records.user.rights }}
+                    </div>
+                </div>
+            </div>
+            <div class="page-title-actions">
+                {%if records.category == "view"%}
+                <a class="btn btn-info" data-toggle="collapse" href="#phone" role="button">Change Phone No</a>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+    <nav class="" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="active breadcrumb-item" aria-current="page">Me</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-card mb-3 card">
+                <div class="table-responsive collapse" id="phone">
+                    <div class="card-body"><h5 class="card-title">Change Phone Number</h5>
+                        <form action="/profile/check" method="post" role="form">
+                            <div class="input-group">
+                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-lock"></i></span></div>
+                                <input placeholder="Enter Your Password" type="password" class="mb-2 form-control" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Change</button>
+                        </form>
+                    </div>
+                </div>
+                {%if records.category == "check"%}
+                <div class="table-responsive">
+                    <div class="card-body"><h5 class="card-title">Change Phone Number</h5>
+                        <form action="/profile/change" method="post" role="form">
+                            <div class="input-group">
+                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-lock"></i></span></div>
+                                <input placeholder="Enter Code Received" type="text" class="mb-2 form-control" name="code" required>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend"><span class="input-group-text mb-2"><i class="metismenu-icon pe-7s-mail"></i></span></div>
+                                <input placeholder="Enter New Phone No" type="text" class="mb-2 form-control" name="phone" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Verify</button>
+                            <a class="btn btn-info" href="/" role="button">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="main-card mb-3 card">
+                <div class="table-responsive">
+                    <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ records.user.employee.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Contact 1</th>
+                            <td>{{ records.user.phone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Contact 2</th>
+                            <td>{{ records.user.employee.phone }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="main-card mb-3 card">
+                <div class="table-responsive">
+                    <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                        <tr>
+                            <th>Designation</th>
+                            <td>{{ records.user.employee.designation }}</td>
+                        </tr>
+                        <tr>
+                            <th>Staff ID</th>
+                            <td>{{ records.user.employee.staff_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>TSC No</th>
+                            <td>{{ records.user.employee.tsc_no }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+  {% endblock %}

@@ -1,0 +1,16 @@
+# settings.yaml
+
+db_host: localhost
+db_user: postgres
+db_name: samis_data
+db_pass: shule@samis
+email_key: None
+sender_email: info@ujuzi.africa
+sms_key: None
+sms_pid: None
+sender_id: Samis
+default_phone: +254727247841
+default_email: karuamuhindi@gmail.com
+default_pass: samis
+domain: www.sbitkenya.com
+default_subjects: ["English", "Kiswahili", "Mathematics", "Biology", "Physics", "Chemistry", "History", "Geography", "CRE", "Agriculture", "Business Studies"]

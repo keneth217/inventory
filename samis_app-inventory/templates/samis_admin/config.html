@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-main">
+    {% include 'samis_admin/side_bar.html' %}
+        <div class="app-main__outer bg-heavy-rain sidebar-text-dark">
+        {%with messages = get_flashed_messages(with_categories=True)%}
+        {%if messages%}
+            {%for category, message in messages%}
+            <div class="alert alert-{{ category }}">
+              {{ message }}
+            </div>
+            {%endfor%}
+        {%endif%}
+        {%endwith%}
+
+        <div class="app-main__inner">
+            <div class="app-page-title">
+                <div class="page-title-wrapper">
+                    <div class="page-title-heading">
+                        <div class="page-title-icon">
+                            <i class="pe-7s-key icon-gradient bg-mean-fruit">
+                            </i>
+                        </div>
+                        <div>Installation Guide
+                            <div class="page-title-subheading">How to Install and Configure the Samis School Management System
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Server Requirements</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">The System Should be installed on a server with the following requirements</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    Ubuntu 22.04 LTS Server <br>
+                                    4 CPU Cores <br>
+                                    8 GB RAM <br>
+                                    200 GB SSD Storage <br>
+                                    Python 3.10 (recommended) or higher
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Install Packages</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">The following packages are required and should thus be installed with the commands provided</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    sudo apt-get update <br>
+                                    sudo apt-get install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools <br>
+                                    sudo apt-get install nginx postgresql libpq-dev sqlite3 unzip
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Python Modules</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">The following Python3 modules are required. Run the commands to provided to install them.</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    pip3 install psycopg2-binary gunicorn <br>
+                                    pip3 install flask flask_sqlalchemy flask-bcrypt flask_httpauth <br>
+                                    pip3 install fuzzywuzzy apscheduler sendgrid psutil pyarmor pyyaml<br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Web Server Installation</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">Using the <b>samis.zip</b> file provided. Run the following commands to install the web server</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    sudo useradd -m samis <br>
+                                    sudo mkdir /opt/SAMIS_STOCK-APP <br>
+                                    sudo cp samis.zip /opt/SAMIS_STOCK-APP <br>
+                                    cd /opt/SAMIS_STOCK-APP <br>
+                                    sudo unzip samis.zip <br>
+                                    sudo cp samis_stock.service /etc/systemd/system/ <br>
+                                    sudo cp samis_stock /etc/nginx/sites-available/ <br>
+                                    sudo chown -R samis:samis /opt/SAMIS_STOCK-APP <br>
+                                    sudo systemctl start samis_stock <br>
+                                    sudo systemctl enable samis_stock <br>
+                                    sudo systemctl restart samis_stock <br>
+                                    sudo systemctl status samis_stock <br>
+                                    sudo ln -s /etc/nginx/sites-available/samis_stock /etc/nginx/sites-enabled <br>
+                                    sudo nginx -t <br>
+                                    sudo systemctl restart nginx <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Configure SSL</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">The following commands install a letsencrypt certificate to secure the web server</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    sudo snap install core <br>
+                                    sudo snap refresh core <br>
+                                    sudo apt remove certbot <br>
+                                    sudo snap install --classic certbot <br>
+                                    sudo ln -s /snap/bin/certbot /usr/bin/certbot <br>
+                                    sudo certbot --nginx -d samislive.ujuzi.africa <br>
+                                    sudo systemctl status snap.certbot.renew.service <br>
+                                    sudo certbot renew --dry-run <br>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Database Configure</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">The following commands setup and configure your Postgresql database</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    sudo -i -u postgres <br>
+                                    psql <br>
+                                    ALTER USER postgres PASSWORD 'NEW_DB_PASSWORD';<br>
+                                    CREATE DATABASE samis_data; <br>
+                                    \q <br>
+                                    exit <br>
+                                </ol>
+                            </nav>
+                            <p class="text-muted">Edit the file <b>settings.yaml</b> with the actual server data</p>
+                        </div>
+                    </div>
+                    <div class="main-card mb-3 card">
+                        <div class="card-body"><h5 class="card-title">Run Web Application</h5>
+                            <div class="divider"></div>
+                            <p class="text-muted">The following commands configure and start the web application</p>
+                            <nav class="" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    cd /opt/SAMIS_STOCK-APP <br>
+                                    python3 configure.py <br>
+                                    systemctl restart nginx <br>
+                                    systemctl restart samis_stock <br>
+                                </ol>
+                            </nav>
+                            <p class="text-muted">Visit the server address to access the application</p>
+                            <p class="text-muted">Login as Super Administrator and configure the system as may be required</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            {% include 'footer.html' %}
+        </div>
+        <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+</div>
+<!--Begin Page Modals-->
+<!--End Page Modals-->
+{% endblock %}
